@@ -2364,12 +2364,16 @@
           return;
         }
 
+        // 최하단 탄성(bounce) 감지: 바닥 근처면 노출 억제
+        var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        var nearBottom = maxScroll > 0 && y >= maxScroll - 24;
+
         if (delta > threshold) {
           // 아래로 스크롤 → 숨김
           topEl.classList.add('is-hidden');
           lastY = y;
-        } else if (delta < -threshold) {
-          // 위로 스크롤 → 노출
+        } else if (delta < -threshold && !nearBottom) {
+          // 위로 스크롤 → 노출 (단, 최하단 bounce 구간은 제외)
           topEl.classList.remove('is-hidden');
           lastY = y;
         }
