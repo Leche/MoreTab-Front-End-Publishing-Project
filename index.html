@@ -2,10 +2,24 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<!-- 디자인 폭 393px(iPhone 15/16 Pro 기준). initial-scale을 두지 않으면 브라우저가
-     layout viewport(393px)를 실제 device-width에 맞춰 자동 스케일 (375/390/402/430 등 모두 fit). -->
-<meta name="viewport" content="width=393, user-scalable=yes, viewport-fit=cover" />
+<!-- 진짜 반응형: 디바이스 폭을 그대로 사용하고 컨텐츠가 가로로 늘어남(fluid).
+     393px(iPhone 15 Pro)은 네이티브, 그보다 넓거나 좁은 디바이스에서는 카드가 가로로 확장/수축.
+     viewport-fit=cover: 노치/홈 인디케이터 영역까지 화면 사용 + env(safe-area-inset-*) 활성화 */ -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>더보기탭 - 발견 피드</title>
+
+<!-- ===== PWA / Add to Home Screen 설정 =====
+     사파리에서 "공유 → 홈 화면에 추가" 후 홈 아이콘으로 열면 standalone 모드(사파리 UI 없음)로 실행됨.
+     실제 앱처럼 동작하는 목업 경험 제공. -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="더보기탭" />
+<meta name="theme-color" content="#ffffff" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" sizes="180x180" href="icons/app_icon_180.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="icons/app_icon_192.png" />
+
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link rel="stylesheet" as="style" crossorigin
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
@@ -32,6 +46,10 @@
     --card-border: rgba(0, 0, 0, 0.04);
     --img-border: rgba(0, 0, 0, 0.03);
     --dim-border: rgba(255, 255, 255, 0.16);
+    /* Safe-area: PWA standalone 모드에서 노치/홈인디케이터 영역 자동 대응
+       (일반 사파리에서는 0으로 fallback) */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
@@ -45,7 +63,8 @@
   }
 
   .device {
-    width: 393px;
+    /* Fluid container — full device width */
+    width: 100%;
     background: #ffffff;
     position: relative;
     overflow: hidden;
@@ -53,11 +72,11 @@
 
   /* BG (Gradation)_최종버전 — 1321:3703
      Base: #f5f5f5  |  Top 54px: white→#f5f5f5  |  Bottom 222px: #f5f5f5→white
-     Auto stretches between header (157px) and tab bar (83px) */
+     Regular: header 104 ↔ tab-bar 49 / Standalone(PWA): header 104+safe-top ↔ tab-bar 49+safe-bottom */
   .bg-gradient {
     position: absolute;
-    top: 157px; left: 0; right: 0;
-    bottom: 83px;
+    top: 104px; left: 0; right: 0;
+    bottom: 49px;
     background: #f5f5f5;
     z-index: 0;
     pointer-events: none;
@@ -79,42 +98,42 @@
     background: linear-gradient(to bottom, #f5f5f5 0%, #ffffff 100%);
   }
 
-  /* ===== TOP ===== */
+  /* ===== TOP =====
+     Fixed to top of viewport; hides on scroll down, shows on scroll up.
+     Height: main-tab 56 + chip-bar 48 = 104px (+safe-top in PWA standalone for notch)
+     Reveal(→visible)는 빠르게 160ms, hide(→hidden)는 240ms로 약간 느리게(자연스러운 사라짐) */
   .top {
-    position: relative;
-    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
     background: #ffffff;
+    transition: transform 160ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
   }
-  /* Status Bar — 393×53, iPhone 14 Pro (Dynamic Island 미지원)
-     Matches Figma node 1321:3709 */
-  .status-bar {
-    position: relative;
-    width: 100%;
-    height: 53px;
-    background: #ffffff;
+  .top.is-hidden {
+    transform: translateY(-100%);
+    transition-duration: 240ms;
   }
-  .status-bar .time {
+
+  /* Scroll Divider — Figma 1387:1007
+     chip-bar bottom 끝에 0.5px 실선(GRAY150A rgba(0,0,0,0.12)).
+     스크롤이 최상단일 때는 숨김, 아래로 스크롤 시작하면 즉시 표시(페이드 없음). */
+  .top::after {
+    content: '';
     position: absolute;
-    top: 15px;
-    left: 33px;
-    height: 22px;
-    line-height: 22px;
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    font-weight: 600;
-    font-size: 17px;
-    letter-spacing: -0.408px;
-    color: #191919;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.5px;
+    background: rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    pointer-events: none;
   }
-  .status-bar .icons {
-    position: absolute;
-    top: 20px;
-    right: 18px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    height: 12px;
+  .top.has-scroll::after {
+    opacity: 1;
   }
-  .status-bar .icons svg { display: block; }
 
   /* Main tab (Figma: 1321:3710) — px-16, h-56, justify-between */
   .main-tab {
@@ -214,9 +233,9 @@
   .feed {
     position: relative;
     z-index: 5;
-    /* Bottom gap between last item and tab-bar is controlled by the
-       last-child margin rule (e.g. card-news:last-child { margin-bottom: 20px }). */
-    padding: 6px 0 0;
+    /* Regular: 104(.top) + 6px spacing = 110 / 49(.tabs only)
+       Standalone(PWA): media query에서 safe-area 추가 */
+    padding: 110px 0 49px;
   }
 
   /* ===== Share row (info+share) — Figma 1321:3799 =====
@@ -266,10 +285,10 @@
   .share-btn svg { width: 18px; height: 18px; color: var(--gray700); display: block; }
 
   /* ===== Card (white background cards) =====
-     node 1321:3723 등 — 361w, 16px radius, white bg, subtle border */
+     node 1321:3723 등 — 16px radius, white bg, subtle border.
+     Fluid width: 화면 폭에서 좌우 16px 마진을 뺀 만큼 가로로 늘어남 (393px 디자인 기준 폭은 361px). */
   .card {
-    width: 361px;
-    margin: 0 auto 12px;
+    margin: 0 16px 12px;
     background: #ffffff;
     border: 1px solid var(--card-border);
     border-radius: 16px;
@@ -364,22 +383,21 @@
     overflow: hidden;
   }
 
-  /* 1321:3731 3-thumbnail frame
+  /* 1321:3731 3-thumbnail frame — fluid
      - flex gap 2px
-     - each cell: 111px height, 1px 3% black border
+     - each cell: 종횡비 119/111 유지 (디자인 기준 119px 가로 × 111px 세로)
      - left cell: 12px radius tl/bl, right cell: 12px radius tr/br, middle: 0
      - images object-cover */
   .thumb-row {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: 2px;
-    height: 111px;
   }
   .thumb-row > .cell {
     flex: 1 1 0;
     min-width: 0;
-    height: 111px;
+    aspect-ratio: 119 / 111;
     position: relative;
     border: 1px solid var(--img-border);
     overflow: hidden;
@@ -444,12 +462,12 @@
   }
 
   /* ===== Card News (card_news_01) =====
-     361x361, overflow-clip, dim_blur overlay, content aligned bottom
+     Fluid 정사각형 — 가로는 16px 좌우 마진 빼고 가득, 높이는 aspect-ratio 1/1로 따라감.
+     overflow-clip, dim_blur overlay, content aligned bottom
      Border radius 16px, light 4% border */
   .card-news {
-    width: 361px;
-    height: 361px;
-    margin: 0 auto 12px;
+    aspect-ratio: 1 / 1;
+    margin: 0 16px 12px;
     border: 1px solid var(--card-border);
     border-radius: 16px;
     overflow: hidden;
@@ -700,11 +718,17 @@
 
   /* ===== Bottom Tab Bar — Figma 1321:4018 =====
      Structure: 5 Tab (49px, #fff) + Home Indicator area (34px)
-     Top edge of .tabs uses a subtle 1px divider line (GRAY100A) instead of shadow. */
+     Top edge of .tabs uses a subtle 1px divider line (GRAY100A) instead of shadow.
+     Fixed to bottom of viewport so tabs + home indicator are always visible regardless of scroll.
+     Standalone(PWA)에서는 iOS가 실제 home indicator를 그려주므로 fake .home-indicator-area를 숨기고
+     safe-bottom 만큼 padding으로 대체(하단 media query에서 처리). */
   .tab-bar {
     background: #ffffff;
-    position: relative;
-    z-index: 10;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
   }
   .tab-bar .tabs {
     height: 49px;
@@ -737,21 +761,99 @@
     background: #f4551e;
     border-radius: 50%;
   }
-  .home-indicator-area {
-    /* Same background as .tabs (inherits #fff from .tab-bar) */
-    background: #ffffff;
-    height: 34px;
-    position: relative;
+  /* ===== Safe-area (노치/홈인디케이터) 통합 처리 =====
+     .home-indicator-area 가짜 34px 제거. 대신:
+     - Regular browser: env()가 0으로 fallback → 추가 padding 없음 (tab-bar = 49px)
+     - PWA standalone: iOS가 실제 safe-area 값 반환 → 자동으로 상/하단 여백 확보
+     이중 분기: @media (display-mode: standalone) + html[data-standalone="true"] */
+  @media all and (display-mode: standalone) {
+    .top { padding-top: env(safe-area-inset-top, 0px); }
+    .tab-bar { padding-bottom: env(safe-area-inset-bottom, 0px); }
+    .feed {
+      padding-top: calc(110px + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+    }
+    .bg-gradient {
+      top: calc(104px + env(safe-area-inset-top, 0px));
+      bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+    }
   }
-  .home-indicator-area .home-indicator {
-    position: absolute;
-    left: calc(50% + 0.5px);
-    bottom: 8px;
-    transform: translateX(-50%);
-    width: 134px;
-    height: 5px;
-    background: #000;
-    border-radius: 100px;
+  html[data-standalone="true"] .top { padding-top: env(safe-area-inset-top, 0px); }
+  html[data-standalone="true"] .tab-bar { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  html[data-standalone="true"] .feed {
+    padding-top: calc(110px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+  }
+  html[data-standalone="true"] .bg-gradient {
+    top: calc(104px + env(safe-area-inset-top, 0px));
+    bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ===== Add to Home Screen 안내 배너 =====
+     사파리(non-standalone)에서 첫 방문 시 하단에 표시.
+     "공유 → 홈 화면에 추가"로 PWA 설치 유도. JS에서 iOS Safari 감지해서 표시. */
+  .a2hs-banner {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 16px;
+    z-index: 200;
+    background: #191919;
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    display: none;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.45;
+    letter-spacing: -0.2px;
+    transform: translateY(120%);
+    opacity: 0;
+    transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 200ms ease;
+  }
+  .a2hs-banner.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .a2hs-banner .a2hs-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .a2hs-banner .a2hs-text strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .a2hs-banner .a2hs-text span {
+    display: block;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 13px;
+  }
+  .a2hs-banner .a2hs-share {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    vertical-align: -3px;
+    margin: 0 2px;
+  }
+  .a2hs-banner .a2hs-close {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
   }
 </style>
 </head>
@@ -761,14 +863,6 @@
 
     <!-- TOP -->
     <header class="top">
-      <div class="status-bar">
-        <div class="time">9:41</div>
-        <div class="icons">
-          <!-- 상태바 아이콘 번들 (피그마 1321:3709 > Signal, Wifi, Battery) -->
-          <img src="icons/statusbar_signal_wifi_battery@3x.png" width="78" height="13" alt="" />
-        </div>
-      </div>
-
       <!-- Main tab (피그마 1321:3710) -->
       <div class="main-tab">
         <!-- Title Type (피그마 1321:3713) -->
@@ -1187,11 +1281,122 @@
         <!-- 더보기 (More) - selected, with red dot badge -->
         <div class="tab more selected"><img src="icons/tab_more@3x.png" width="28" height="28" alt="더보기" /><span class="dot-badge"></span></div>
       </div>
-      <!-- Home Indicator area (34px, #f9f9fa) -->
-      <div class="home-indicator-area">
-        <div class="home-indicator"></div>
-      </div>
     </footer>
   </div>
+
+  <!-- Add to Home Screen 안내 배너 (iOS Safari 첫 방문자에게만 노출) -->
+  <div class="a2hs-banner" id="a2hsBanner" role="dialog" aria-label="홈 화면에 추가 안내">
+    <div class="a2hs-text">
+      <strong>앱처럼 전체 화면으로 보기</strong>
+      <span>하단
+        <svg class="a2hs-share" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3v12M12 3l-4 4M12 3l4 4" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 12v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        공유 → 홈 화면에 추가
+      </span>
+    </div>
+    <button class="a2hs-close" type="button" aria-label="닫기" id="a2hsClose">&times;</button>
+  </div>
+
+  <script>
+    /* 상단 헤더(.top)의 스크롤 연동 인터랙션
+       1) 아래로 스크롤 시작 → 위로 슬라이드 업(is-hidden 추가, 240ms)
+       2) 다시 위로 스크롤 → 슬라이드 다운(is-hidden 제거, 160ms)
+       3) 최상단이 아니면 chip-bar 하단에 스크롤 디바이더 라인 노출(has-scroll 추가)
+       - threshold로 미세한 떨림 방지
+       - rAF로 스크롤 이벤트 쓰로틀링 */
+    (function () {
+      var topEl = document.querySelector('.top');
+      if (!topEl) return;
+
+      var lastY = window.scrollY || window.pageYOffset || 0;
+      var ticking = false;
+      var threshold = 6;       // 방향 전환 인정 최소 이동 픽셀
+      var revealAt = 0;        // 최상단에 가까우면 무조건 노출
+
+      function update() {
+        ticking = false;
+        var y = window.scrollY || window.pageYOffset || 0;
+        var delta = y - lastY;
+
+        // 스크롤 디바이더: 최상단이 아니면 노출
+        if (y > 0) {
+          topEl.classList.add('has-scroll');
+        } else {
+          topEl.classList.remove('has-scroll');
+        }
+
+        // 최상단 근처에서는 헤더 항상 표시
+        if (y <= revealAt) {
+          topEl.classList.remove('is-hidden');
+          lastY = y;
+          return;
+        }
+
+        if (delta > threshold) {
+          // 아래로 스크롤 → 숨김
+          topEl.classList.add('is-hidden');
+          lastY = y;
+        } else if (delta < -threshold) {
+          // 위로 스크롤 → 노출
+          topEl.classList.remove('is-hidden');
+          lastY = y;
+        }
+      }
+
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          window.requestAnimationFrame(update);
+          ticking = true;
+        }
+      }, { passive: true });
+    })();
+
+    /* PWA standalone 모드 감지 → <html data-standalone="true"> 설정
+       @media (display-mode: standalone) CSS와 이중 분기 */
+    (function () {
+      var isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true;
+      if (isStandalone) {
+        document.documentElement.setAttribute('data-standalone', 'true');
+      }
+    })();
+
+    /* Add to Home Screen 안내
+       - iOS Safari에서만(비-standalone 상태) 노출
+       - 사용자가 ×로 닫으면 sessionStorage에 기록 → 같은 세션 내 재노출 방지
+       - 이미 standalone으로 띄웠거나, iOS가 아닌 환경에서는 노출 안 함 */
+    (function () {
+      var ua = navigator.userAgent || '';
+      var isIOS = /iphone|ipad|ipod/i.test(ua);
+      var isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true;
+      var dismissed = false;
+      try { dismissed = sessionStorage.getItem('a2hs_dismissed') === '1'; } catch (e) {}
+
+      if (!isIOS || isStandalone || dismissed) return;
+
+      var banner = document.getElementById('a2hsBanner');
+      var closeBtn = document.getElementById('a2hsClose');
+      if (!banner || !closeBtn) return;
+
+      // 첫 렌더 이후 약간 딜레이 주고 스르륵 등장
+      banner.style.display = 'flex';
+      setTimeout(function () {
+        banner.classList.add('is-visible');
+      }, 700);
+
+      closeBtn.addEventListener('click', function () {
+        banner.classList.remove('is-visible');
+        try { sessionStorage.setItem('a2hs_dismissed', '1'); } catch (e) {}
+        setTimeout(function () {
+          banner.style.display = 'none';
+        }, 320);
+      });
+    })();
+  </script>
 </body>
 </html>
