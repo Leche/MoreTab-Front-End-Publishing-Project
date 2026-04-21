@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>더보기탭 디자인 시스템</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="assets/ds.css" />
+  <script defer src="assets/ds.js"></script>
+</head>
+<body data-page="home" data-root="">
+  <main class="ds-main">
+    <div class="ds-main-inner">
+
+      <section class="ds-hero">
+        <p class="ds-hero-eyebrow">KAKAOTALK · MORE TAB</p>
+        <h1 class="ds-hero-title">더보기탭 디자인 시스템</h1>
+        <p class="ds-hero-desc">
+          카카오톡 <strong>더보기탭</strong> 지면에 사용되는 디자인 토큰과 컴포넌트, 그리고
+          이들을 조합해 화면을 구성하는 패턴을 문서화한 페이지입니다. 일관된 시각 언어와
+          재사용 가능한 구조로 더 빠르고 정교한 화면 설계를 돕습니다.
+        </p>
+
+        <div class="ds-spec-strip">
+          <div><span class="ds-status-dot"></span><span class="ds-spec-label">상태</span><span class="ds-spec-value">Released</span></div>
+          <div><span class="ds-spec-label">최근 업데이트</span><span class="ds-spec-value">2026.04.21</span></div>
+          <div><span class="ds-spec-label">기반 플랫폼</span><span class="ds-spec-value">iOS / Android (모바일 웹 퍼블리싱)</span></div>
+        </div>
+      </section>
+
+      <section class="ds-section">
+        <h2 class="ds-section-title">카테고리</h2>
+        <p class="ds-section-desc">
+          Foundation에서 기본 토큰을, Components에서 실제 UI 블록을, Patterns에서 화면 단위의 구성 방식을 확인할 수 있습니다.
+        </p>
+        <div class="ds-category-grid">
+          <a class="ds-category-card" href="foundation/color.html">
+            <div class="cat-icon">F</div>
+            <h3>Foundation</h3>
+            <p>색상, 타이포그래피, 스페이싱, 아이콘 등 디자인의 기본 단위.</p>
+            <div class="cat-items">Color · Typography · Spacing · Icon</div>
+          </a>
+          <a class="ds-category-card" href="components/overview.html">
+            <div class="cat-icon">C</div>
+            <h3>Components</h3>
+            <p>칩, 카드, 쇼트컷, 탭바 등 더보기탭에 쓰이는 UI 컴포넌트.</p>
+            <div class="cat-items">12개 컴포넌트</div>
+          </a>
+          <a class="ds-category-card" href="patterns/app-shell.html">
+            <div class="cat-icon">P</div>
+            <h3>Patterns</h3>
+            <p>컴포넌트를 조합한 화면 단위 구성 규칙과 레이아웃.</p>
+            <div class="cat-items">App Shell · Home Feed</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="ds-section">
+        <h2 class="ds-section-title">시작하기</h2>
+        <p class="ds-section-desc">
+          더보기탭 지면을 새로 설계하거나 기존 섹션을 확장할 때, 아래 순서로 문서를
+          살펴보면 도움이 됩니다.
+        </p>
+
+        <div class="ds-subsection">
+          <h3 class="ds-subsection-title">1. 토큰 먼저 확인하기</h3>
+          <p>
+            색상, 폰트 사이즈, 여백은 모두 CSS Custom Property로 정의되어 있어, 새로운 요소를 만들 때도 기존 토큰을 우선 사용합니다.
+            Pretendard를 기본 폰트로 사용하고, 본문은 <code>--gray900</code> / <code>#191919</code>, 보조 정보는 <code>--gray500</code> / <code>#767676</code>를 사용합니다.
+          </p>
+        </div>
+        <div class="ds-subsection">
+          <h3 class="ds-subsection-title">2. 컴포넌트로 조합하기</h3>
+          <p>
+            더보기탭의 홈 피드는 <code>.pay-strip</code>, <code>.service-shortcut</code>, <code>.home-ad</code>, <code>.game-card</code>, <code>.kakaonow-grid</code>, <code>.weather-card</code> 같은 독립 컴포넌트를 세로로 쌓아 올린 구조입니다. 각 컴포넌트의 마진/패딩은 Patterns 페이지를 참고합니다.
+          </p>
+        </div>
+        <div class="ds-subsection">
+          <h3 class="ds-subsection-title">3. 패턴으로 화면 구성하기</h3>
+          <p>
+            상단 헤더(104px) — 콘텐츠 영역 — 하단 탭바(49px)로 이뤄지는 <em>앱 셸</em> 구조 안에서 콘텐츠 영역만 변경됩니다.
+            Safe area와 sticky 동작 규칙은 <a href="patterns/app-shell.html">앱 셸 구조</a>에서 확인하세요.
+          </p>
+        </div>
+      </section>
+
+      <section class="ds-section">
+        <h2 class="ds-section-title">원칙</h2>
+        <div class="ds-subsection">
+          <h3 class="ds-subsection-title">정보는 카드로, 관계는 간격으로</h3>
+          <p>같은 성격의 정보는 16px 라운드 카드로 묶고, 서로 다른 정보 간의 관계는 12px 섹션 간격으로 구분합니다.</p>
+        </div>
+        <div class="ds-subsection">
+          <h3 class="ds-subsection-title">1포인트 컬러 규칙</h3>
+          <p>카카오 옐로우 <code>#fee500</code>는 결제 관련 진입(PayStrip)에만 사용합니다. 그 외에는 그레이스케일을 기본으로, 강조가 필요한 경우 <code>--point-red</code>, <code>--point-blue</code>를 제한적으로 사용합니다.</p>
+        </div>
+        <div class="ds-subsection">
+          <h3 class="ds-subsection-title">모바일-퍼스트</h3>
+          <p>기준 뷰포트는 393px(iPhone 15 Pro). 컴포넌트의 내부 패딩은 16px, 카드 간 세로 간격은 12px이 기본값입니다.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</body>
+</html>

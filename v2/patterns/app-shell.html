@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>앱 셸 구조 — 더보기탭 디자인 시스템</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="../assets/ds.css" />
+  <script defer src="../assets/ds.js"></script>
+  <style>
+    .shell-demo { width:100%; max-width:380px; margin:0 auto; background:#fff; border:1px solid var(--ds-border); border-radius:24px; overflow:hidden; }
+    .shell-zone { padding:14px 16px; font-size:12px; font-family:'JetBrains Mono', monospace; color:#595959; }
+    .shell-zone .label { font-weight:700; color:#191919; font-size:13px; }
+    .shell-top { background:#f5f5f5; }
+    .shell-chip { background:#ebebeb; border-top: 1px dashed rgba(0,0,0,0.1); }
+    .shell-content { background:#f5f5f5; min-height:280px; padding:14px 16px; color:#767676; }
+    .shell-tabbar { background:#e6e6e6; border-top: 0.5px solid rgba(0,0,0,0.08); }
+    .z-badge { display:inline-block; padding:2px 6px; border-radius:4px; background:rgba(0,0,0,0.05); font-size:11px; margin-left:6px; color:#191919; }
+  </style>
+</head>
+<body data-page="patterns/app-shell" data-root="../">
+  <main class="ds-main">
+    <div class="ds-main-inner">
+      <header class="ds-page-header">
+        <p class="ds-page-eyebrow">PATTERNS</p>
+        <h1 class="ds-page-title">앱 셸 구조</h1>
+        <p class="ds-page-desc">
+          더보기탭의 모든 화면은 <strong>상단 헤더(104px) — 콘텐츠 영역 — 하단 탭바(49px)</strong>의
+          3개 영역으로 구성됩니다. 헤더와 탭바는 스크롤에도 고정되며, 콘텐츠 영역만 세로로
+          스크롤됩니다.
+        </p>
+        <div class="ds-spec-strip">
+          <div><span class="ds-status-dot"></span><span class="ds-spec-value">Released</span></div>
+          <div><span class="ds-spec-label">기준 뷰포트</span><span class="ds-spec-value">393 × 852 (iPhone 15 Pro)</span></div>
+        </div>
+      </header>
+
+      <section class="ds-section">
+        <h2 class="ds-section-title">Layout</h2>
+        <p class="ds-section-desc">각 영역의 크기와 쌓임 순서입니다. 콘텐츠 영역의 상하 패딩은 자동으로 헤더·탭바 높이만큼 확보됩니다.</p>
+        <div class="shell-demo">
+          <div class="shell-zone shell-top">
+            <div class="label">.top <span class="z-badge">sticky · z:5</span></div>
+            .main-tab · 56px (로고 + 액션 3)
+          </div>
+          <div class="shell-zone shell-chip">
+            .chip-bar · 48px (홈 · 지갑)
+          </div>
+          <div class="shell-zone shell-content">
+            <div class="label">main.feed <span class="z-badge">flow</span></div>
+            <div style="margin-top:8px">.screen-home · padding 6 16 0 · flex column · gap 12</div>
+          </div>
+          <div class="shell-zone shell-tabbar">
+            <div class="label">.tab-bar <span class="z-badge">fixed bottom · z:10</span></div>
+            49px · 5 tabs
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-section">
+        <h2 class="ds-section-title">Z-Index 규칙</h2>
+        <table class="ds-table">
+          <thead><tr><th>레이어</th><th>z-index</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">.tab-bar</td><td class="mono">10</td><td class="muted">하단 탭바, 최상위 네비</td></tr>
+            <tr><td class="mono">.a2hs-banner</td><td class="mono">9</td><td class="muted">iOS 홈 추가 유도 배너 (탭바 위)</td></tr>
+            <tr><td class="mono">.top</td><td class="mono">5</td><td class="muted">상단 sticky 헤더</td></tr>
+            <tr><td class="mono">.bg-gradient</td><td class="mono">0</td><td class="muted">배경 그라디언트 레이어</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="ds-section">
+        <h2 class="ds-section-title">Safe Area 대응</h2>
+        <p class="ds-section-desc">노치·홈 인디케이터가 있는 기종을 위해 상하 safe-area를 CSS 변수로 주입합니다.</p>
+<pre><code>:root {
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+.top     { padding-top: var(--safe-top); }
+.tab-bar { padding-bottom: var(--safe-bottom); }
+body     { padding-bottom: 49px; /* tab-bar 만큼 확보 */ }</code></pre>
+      </section>
+
+      <section class="ds-section">
+        <h2 class="ds-section-title">Background Gradient</h2>
+        <p class="ds-section-desc">화면 전체에 깔리는 <code>.bg-gradient</code>는 콘텐츠 영역에 은은한 톤을 만들어 카드와 배경이 자연스럽게 분리되도록 합니다. 상단 54px과 하단 222px에 각각 화이트 → <code>#f5f5f5</code> 그라디언트가 적용됩니다.</p>
+<pre><code>.bg-gradient {
+  position: absolute;
+  inset: 104px 0 49px 0;  /* header 아래 ~ tabbar 위 */
+  background: #f5f5f5;
+  z-index: 0;
+}
+.bg-gradient::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 54px;
+  background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);
+}
+.bg-gradient::after {
+  content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 222px;
+  background: linear-gradient(0deg, #fff 0%, #f5f5f5 100%);
+}</code></pre>
+      </section>
+
+      <section class="ds-section">
+        <h2 class="ds-section-title">전체 Skeleton</h2>
+<pre><code>&lt;body&gt;
+  &lt;div class="device"&gt;
+    &lt;div class="bg-gradient" aria-hidden="true"&gt;&lt;/div&gt;
+
+    &lt;header class="top"&gt;
+      &lt;div class="main-tab"&gt;...&lt;/div&gt;
+      &lt;div class="chip-bar"&gt;...&lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;main class="feed"&gt;
+      &lt;section class="screen screen-wallet" data-screen="wallet"&gt;...&lt;/section&gt;
+      &lt;section class="screen screen-home is-active" data-screen="home" id="homeScreen"&gt;
+        &lt;!-- Components injected by JS --&gt;
+      &lt;/section&gt;
+    &lt;/main&gt;
+
+    &lt;footer class="tab-bar"&gt;
+      &lt;div class="tabs"&gt;...&lt;/div&gt;
+    &lt;/footer&gt;
+  &lt;/div&gt;
+&lt;/body&gt;</code></pre>
+      </section>
+
+      <nav class="ds-related">
+        <a href="../components/tab-bar.html"><div class="dir">이전 — Components</div><div class="title">TabBar (하단)</div></a>
+        <a href="home-screen.html"><div class="dir">다음 — Patterns</div><div class="title">홈 피드 구성</div></a>
+      </nav>
+    </div>
+  </main>
+</body>
+</html>
