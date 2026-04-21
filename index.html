@@ -893,6 +893,7 @@
   }
   .screen-home.is-active { display: flex; }
   .screen-wallet { display: none; padding-top: 6px; }
+  body.wallet-active .bg-gradient { display: none; }
   .screen-wallet.is-active { display: block; }
   .wallet-screenshot { width: 100%; }
   .wallet-screenshot img { width: 100%; display: block; }
@@ -1912,6 +1913,8 @@
           if (s.getAttribute('data-screen') === screenKey) s.classList.add('is-active');
           else s.classList.remove('is-active');
         });
+        // 지갑칩 활성 시 bg-gradient 숨김
+        document.body.classList.toggle('wallet-active', screenKey === 'wallet');
         // 스크롤 리셋 + 헤더 reveal
         window.scrollTo({ top: 0, behavior: 'auto' });
         var topEl = document.querySelector('.top');
