@@ -127,7 +127,7 @@ p { margin: 0; }
   display: flex;
   align-items: stretch;
   gap: 28px;
-  margin-left: auto;
+  margin-left: 48px;
   height: 100%;
 }
 .ds-header-nav a {
@@ -234,7 +234,7 @@ body.is-no-sidebar .ds-footer {
 .ds-page-title {
   font-size: 36px;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: normal;
   color: var(--ds-text);
   margin-bottom: 14px;
   line-height: 1.25;
