@@ -22,9 +22,9 @@ git pull --rebase && \
 rm -rf v2 && mkdir v2 && \
 cp -R "/Users/leche_M3/Documents/Claude/Projects/더보기탭 디자인 시스템 구현/"* v2/ && \
 rm -f v2/components/card.html v2/components/card-news.html && \
-find v2 -name "*.html" -exec sed -i '' 's|assets/ds.css"|assets/ds.css?v=15"|g; s|assets/ds.js"|assets/ds.js?v=15"|g; s|../assets/ds.css"|../assets/ds.css?v=15"|g; s|../assets/ds.js"|../assets/ds.js?v=15"|g' {} + && \
+find v2 -name "*.html" -exec sed -i '' 's|assets/ds.css"|assets/ds.css?v=16"|g; s|assets/ds.js"|assets/ds.js?v=16"|g; s|../assets/ds.css"|../assets/ds.css?v=16"|g; s|../assets/ds.js"|../assets/ds.js?v=16"|g' {} + && \
 git add v2 && \
-git commit -m "v2: Patterns LNB labels translated to English (App Shell, Home Feed)" && \
+git commit -m "v2: remove ds-page-eyebrow across all pages, header-to-title gap 150px" && \
 git push
 ```
 

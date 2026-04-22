@@ -205,7 +205,7 @@ p { margin: 0; }
 /* Main content */
 .ds-main {
   margin-left: var(--ds-sidebar-w);
-  padding: calc(var(--ds-header-h) + 48px) 56px 120px;
+  padding: calc(var(--ds-header-h) + 150px) 56px 120px;
   min-height: 100vh;
 }
 .ds-main-inner { max-width: var(--ds-content-max); margin: 0 auto; }
