@@ -22,9 +22,9 @@ git pull --rebase && \
 rm -rf v2 && mkdir v2 && \
 cp -R "/Users/leche_M3/Documents/Claude/Projects/더보기탭 디자인 시스템 구현/"* v2/ && \
 rm -f v2/components/card.html v2/components/card-news.html && \
-find v2 -name "*.html" -exec sed -i '' 's|assets/ds.css"|assets/ds.css?v=11"|g; s|assets/ds.js"|assets/ds.js?v=11"|g; s|../assets/ds.css"|../assets/ds.css?v=11"|g; s|../assets/ds.js"|../assets/ds.js?v=11"|g' {} + && \
+find v2 -name "*.html" -exec sed -i '' 's|assets/ds.css"|assets/ds.css?v=12"|g; s|assets/ds.js"|assets/ds.js?v=12"|g; s|../assets/ds.css"|../assets/ds.css?v=12"|g; s|../assets/ds.js"|../assets/ds.js?v=12"|g' {} + && \
 git add v2 && \
-git commit -m "v2: components LNB — drop section title, promote sub-group headings (LDSM pattern)" && \
+git commit -m "v2: uppercase page title, drop overview from components LNB, strip (Korean) parentheticals" && \
 git push
 ```
 

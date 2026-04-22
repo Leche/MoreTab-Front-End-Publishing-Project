@@ -238,6 +238,7 @@ body.is-no-sidebar .ds-footer {
   color: var(--ds-text);
   margin-bottom: 14px;
   line-height: 1.25;
+  text-transform: uppercase;
 }
 .ds-page-desc {
   font-size: 17px;

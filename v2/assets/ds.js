@@ -28,15 +28,10 @@
     ],
     components: [
       {
-        items: [
-          { id: 'components/overview', label: '전체 보기', href: 'components/overview.html' },
-        ],
-      },
-      {
         group: 'Navigation',
         items: [
-          { id: 'components/header', label: 'Header (상단바)', href: 'components/header.html' },
-          { id: 'components/tab-bar', label: 'TabBar (하단)', href: 'components/tab-bar.html' },
+          { id: 'components/header', label: 'Header', href: 'components/header.html' },
+          { id: 'components/tab-bar', label: 'TabBar', href: 'components/tab-bar.html' },
         ],
       },
       {
