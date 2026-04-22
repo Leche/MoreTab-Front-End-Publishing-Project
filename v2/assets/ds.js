@@ -163,4 +163,24 @@
       });
     });
   });
+
+  // ----- Syntax highlighting (highlight.js, atom-one-dark) -----------------
+  (function loadHljs() {
+    const CDN = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/';
+    const themeLink = document.createElement('link');
+    themeLink.rel = 'stylesheet';
+    themeLink.href = CDN + 'styles/atom-one-dark.min.css';
+    document.head.appendChild(themeLink);
+
+    const script = document.createElement('script');
+    script.src = CDN + 'highlight.min.js';
+    script.onload = function () {
+      if (window.hljs) {
+        document.querySelectorAll('pre code').forEach(function (el) {
+          window.hljs.highlightElement(el);
+        });
+      }
+    };
+    document.head.appendChild(script);
+  })();
 })();
