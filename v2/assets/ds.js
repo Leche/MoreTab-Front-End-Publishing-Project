@@ -74,9 +74,10 @@
     return 'home';
   }
 
+  // Components 섹션은 서브그룹 헤딩(Navigation/Controls/Feed Blocks)이 LNB 타이틀
+  // 역할을 대신하므로 상단 섹션 타이틀을 생략한다 (LDSM /components/ 패턴).
   const sectionTitles = {
     foundation: 'Foundation',
-    components: 'Components',
     patterns: 'Patterns',
   };
 

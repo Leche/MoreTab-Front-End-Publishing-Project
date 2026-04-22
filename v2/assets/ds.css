@@ -177,15 +177,15 @@ p { margin: 0; }
   letter-spacing: -0.2px;
 }
 
-.ds-lnb-group { margin-bottom: 24px; }
+.ds-lnb-group { margin-bottom: 28px; }
 .ds-lnb-group.is-untitled { margin-bottom: 20px; }
 .ds-lnb-group h3 {
-  padding: 0 28px 10px;
-  font-size: 11px;
+  padding: 0 28px 12px;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ds-text-caption);
+  letter-spacing: -0.2px;
+  text-transform: none;
+  color: #191919;
 }
 .ds-lnb-group ul { display: flex; flex-direction: column; gap: 2px; }
 .ds-lnb-group a {
