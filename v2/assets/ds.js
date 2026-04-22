@@ -55,8 +55,8 @@
     patterns: [
       {
         items: [
-          { id: 'patterns/app-shell', label: '앱 셸 구조', href: 'patterns/app-shell.html' },
-          { id: 'patterns/home-screen', label: '홈 피드 구성', href: 'patterns/home-screen.html' },
+          { id: 'patterns/app-shell', label: 'App Shell', href: 'patterns/app-shell.html' },
+          { id: 'patterns/home-screen', label: 'Home Feed', href: 'patterns/home-screen.html' },
         ],
       },
     ],
