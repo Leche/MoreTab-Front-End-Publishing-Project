@@ -176,7 +176,8 @@ p { margin: 0; }
 .ds-sidebar::-webkit-scrollbar { width: 4px; }
 .ds-sidebar::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
 
-.ds-lnb-group { margin-bottom: 28px; }
+.ds-lnb-group { margin-bottom: 24px; }
+.ds-lnb-group.is-untitled { margin-bottom: 20px; }
 .ds-lnb-group h3 {
   padding: 0 28px 10px;
   font-size: 11px;
@@ -210,6 +211,12 @@ p { margin: 0; }
   min-height: 100vh;
 }
 .ds-main-inner { max-width: var(--ds-content-max); margin: 0 auto; }
+
+/* 사이드바가 없는 페이지(Overview)는 본문이 전폭으로 */
+body.is-no-sidebar .ds-main,
+body.is-no-sidebar .ds-footer {
+  margin-left: 0;
+}
 
 /* Page header */
 .ds-page-header {

@@ -14,45 +14,68 @@
     { id: 'patterns', label: 'Patterns', href: 'patterns/app-shell.html' },
   ];
 
-  const sideNav = [
-    {
-      group: '시작하기',
-      items: [
-        { id: 'home', label: '소개 (Overview)', href: 'index.html' },
-      ],
-    },
-    {
-      group: 'Foundation',
-      items: [
-        { id: 'foundation/color', label: 'Color', href: 'foundation/color.html' },
-        { id: 'foundation/typography', label: 'Typography', href: 'foundation/typography.html' },
-        { id: 'foundation/spacing', label: 'Spacing & Radius', href: 'foundation/spacing.html' },
-        { id: 'foundation/icon', label: 'Icon', href: 'foundation/icon.html' },
-      ],
-    },
-    {
-      group: 'Components',
-      items: [
-        { id: 'components/overview', label: '전체 보기', href: 'components/overview.html' },
-        { id: 'components/header', label: 'Header (상단바)', href: 'components/header.html' },
-        { id: 'components/chip', label: 'Chip', href: 'components/chip.html' },
-        { id: 'components/pay-strip', label: 'PayStrip', href: 'components/pay-strip.html' },
-        { id: 'components/service-shortcut', label: 'ServiceShortcut', href: 'components/service-shortcut.html' },
-        { id: 'components/home-ad', label: 'HomeAd', href: 'components/home-ad.html' },
-        { id: 'components/game-card', label: 'GameCard', href: 'components/game-card.html' },
-        { id: 'components/kakaonow', label: 'KakaoNow', href: 'components/kakaonow.html' },
-        { id: 'components/weather-card', label: 'WeatherCard', href: 'components/weather-card.html' },
-        { id: 'components/tab-bar', label: 'TabBar (하단)', href: 'components/tab-bar.html' },
-      ],
-    },
-    {
-      group: 'Patterns',
-      items: [
-        { id: 'patterns/app-shell', label: '앱 셸 구조', href: 'patterns/app-shell.html' },
-        { id: 'patterns/home-screen', label: '홈 피드 구성', href: 'patterns/home-screen.html' },
-      ],
-    },
-  ];
+  // LNB: top-nav 섹션별로 분리. Overview(home) 섹션은 사이드바 없음.
+  const sideNavBySection = {
+    foundation: [
+      {
+        items: [
+          { id: 'foundation/color', label: 'Color', href: 'foundation/color.html' },
+          { id: 'foundation/typography', label: 'Typography', href: 'foundation/typography.html' },
+          { id: 'foundation/spacing', label: 'Spacing & Radius', href: 'foundation/spacing.html' },
+          { id: 'foundation/icon', label: 'Icon', href: 'foundation/icon.html' },
+        ],
+      },
+    ],
+    components: [
+      {
+        items: [
+          { id: 'components/overview', label: '전체 보기', href: 'components/overview.html' },
+        ],
+      },
+      {
+        group: 'Navigation',
+        items: [
+          { id: 'components/header', label: 'Header (상단바)', href: 'components/header.html' },
+          { id: 'components/tab-bar', label: 'TabBar (하단)', href: 'components/tab-bar.html' },
+        ],
+      },
+      {
+        group: 'Controls',
+        items: [
+          { id: 'components/chip', label: 'Chip', href: 'components/chip.html' },
+        ],
+      },
+      {
+        group: 'Feed Blocks',
+        items: [
+          { id: 'components/pay-strip', label: 'PayStrip', href: 'components/pay-strip.html' },
+          { id: 'components/service-shortcut', label: 'ServiceShortcut', href: 'components/service-shortcut.html' },
+          { id: 'components/home-ad', label: 'HomeAd', href: 'components/home-ad.html' },
+          { id: 'components/kakaonow', label: 'KakaoNow', href: 'components/kakaonow.html' },
+          { id: 'components/weather-card', label: 'WeatherCard', href: 'components/weather-card.html' },
+          { id: 'components/game-card', label: 'GameCard', href: 'components/game-card.html' },
+        ],
+      },
+    ],
+    patterns: [
+      {
+        items: [
+          { id: 'patterns/app-shell', label: '앱 셸 구조', href: 'patterns/app-shell.html' },
+          { id: 'patterns/home-screen', label: '홈 피드 구성', href: 'patterns/home-screen.html' },
+        ],
+      },
+    ],
+  };
+
+  function currentSection() {
+    if (currentPage.startsWith('foundation/')) return 'foundation';
+    if (currentPage.startsWith('components/')) return 'components';
+    if (currentPage.startsWith('patterns/')) return 'patterns';
+    return 'home';
+  }
+
+  const activeSection = currentSection();
+  const sideNav = sideNavBySection[activeSection] || null;
 
   // ----- Compute which top nav is active ----------------------------------
   function matchTop(id) {
@@ -88,30 +111,36 @@
   `;
 
   // ----- Render Sidebar ----------------------------------------------------
-  const sidebar = document.createElement('aside');
-  sidebar.className = 'ds-sidebar';
-  sidebar.innerHTML = sideNav
-    .map(
-      (g) => `
-      <div class="ds-lnb-group">
-        <h3>${g.group}</h3>
-        <ul>
-          ${g.items
-            .map(
-              (it) =>
-                `<li><a href="${root}${it.href}" class="${
-                  it.id === currentPage ? 'is-active' : ''
-                }">${it.label}</a></li>`
-            )
-            .join('')}
-        </ul>
-      </div>
-    `
-    )
-    .join('');
+  let sidebar = null;
+  if (sideNav) {
+    sidebar = document.createElement('aside');
+    sidebar.className = 'ds-sidebar';
+    sidebar.innerHTML = sideNav
+      .map(
+        (g) => `
+        <div class="ds-lnb-group${g.group ? '' : ' is-untitled'}">
+          ${g.group ? `<h3>${g.group}</h3>` : ''}
+          <ul>
+            ${g.items
+              .map(
+                (it) =>
+                  `<li><a href="${root}${it.href}" class="${
+                    it.id === currentPage ? 'is-active' : ''
+                  }">${it.label}</a></li>`
+              )
+              .join('')}
+          </ul>
+        </div>
+      `
+      )
+      .join('');
+  } else {
+    // 사이드바 없는 페이지(Overview)는 main이 전폭으로 퍼지도록 body에 플래그
+    body.classList.add('is-no-sidebar');
+  }
 
   // ----- Mount -------------------------------------------------------------
-  body.insertBefore(sidebar, body.firstChild);
+  if (sidebar) body.insertBefore(sidebar, body.firstChild);
   body.insertBefore(header, body.firstChild);
 
   // ----- Example tabs (for component pages) --------------------------------
