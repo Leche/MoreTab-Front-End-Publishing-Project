@@ -14,7 +14,7 @@
 *(이 블록이 이미 클립보드에 담겨 있어요 — ⌘V 한 번으로 붙여넣기 가능)*
 
 ```bash
-cd ~/Desktop && \
+mkdir -p ~/Documents/GitHub && cd ~/Documents/GitHub && \
 [ -d moretab-design-system-web-publishing ] || \
   git clone https://github.com/Leche/moretab-design-system-web-publishing.git && \
 cd moretab-design-system-web-publishing && \
@@ -30,7 +30,7 @@ git push
 
 ### 이 블록이 하는 일
 
-1. `~/Desktop` 으로 이동 (없으면 만들지는 않음)
+1. `~/Documents/GitHub/` 폴더가 없으면 생성 후 그리로 이동
 2. 기존 레포가 없으면 clone (두 번째 실행부터는 스킵)
 3. 원격의 최신 변경을 rebase pull
 4. 기존 `v2/` 폴더가 있으면 지우고 새로 만듦
